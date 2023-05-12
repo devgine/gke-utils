@@ -1,0 +1,6 @@
+# IntelliJ project files
+.idea
+
+# gcloud secrets
+/.gcloud/*
+!/.gcloud/.gitkeep
