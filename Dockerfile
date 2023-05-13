@@ -17,6 +17,8 @@ ENV PATH $PATH:/usr/local/google-cloud-sdk/bin
 
 # Needed to use new GKE auth mechanism for kubeconfig
 ENV USE_GKE_GCLOUD_AUTH_PLUGIN=True
+# Useful for gcloud auth application-default command
+ENV GOOGLE_APPLICATION_CREDENTIALS=/var/gcloud/credentials/credentials.json
 
 RUN apk add --update --no-cache \
     bash \
@@ -32,15 +34,7 @@ RUN apk add --update --no-cache \
     && gcloud config set component_manager/disable_update_check true \
     && gcloud components install gke-gcloud-auth-plugin
 
-# Login with the service account
-#RUN gcloud auth login --cred-file=/var/.gcloud/service-account/kubernetes-service.json
-#ENV GOOGLE_APPLICATION_CREDENTIALS=/var/.gcloud/service-account/kubernetes-service.json
-
-# Login helm to google artifact
-#RUN gcloud auth application-default print-access-token | \
-#    helm registry login -u oauth2accesstoken --password-stdin https://us-central1-docker.pkg.dev
-
-WORKDIR /var/charts/stack
+WORKDIR /var/gke-utils
 
 ## todo add volumes
 VOLUME /root/.kube
@@ -54,5 +48,4 @@ HEALTHCHECK --interval=5s --timeout=3s --retries=3 CMD gcloud version || exit 1
 COPY ./docker-entrypoint.sh /usr/local/bin/docker-entrypoint
 RUN chmod +x /usr/local/bin/docker-entrypoint
 ENTRYPOINT ["docker-entrypoint"]
-
-CMD ["gcloud-service-account-auth"]
+CMD ["tail", "-f", "/dev/null"]

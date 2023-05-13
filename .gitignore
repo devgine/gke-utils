@@ -4,3 +4,4 @@
 # gcloud secrets
 /.gcloud/*
 !/.gcloud/.gitkeep
+/poc/
