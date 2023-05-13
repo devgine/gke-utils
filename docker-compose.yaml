@@ -1,18 +1,14 @@
 version: '3.8'
 
-# todo use service account credential to connect to the project (doc)
-
 services:
   kubernetes:
     container_name: kubernetes
     tty: true
     build:
       context: .
-      target: build
     volumes:
-      - '../company-versioning-api/.kubernetes/:/var/charts/stack'
-      - './.gcloud:/var/.gcloud'
-      - '/var/run/docker.sock:/var/run/docker.sock:ro'
+      - '../company-versioning-api/.kubernetes/:/var/gke-utils'
+      - './.gcloud/:/var/gcloud'
       - 'kube_data:/root/.kube'
       - 'docker_data:/root/.docker'
       - 'config_data:/root/.config'
