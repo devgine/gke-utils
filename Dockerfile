@@ -21,8 +21,6 @@ ENV USE_GKE_GCLOUD_AUTH_PLUGIN=True
 ENV GOOGLE_APPLICATION_CREDENTIALS=/var/gcloud/credentials/credentials.json
 
 RUN apk add --update --no-cache \
-    bash \
-    curl \
     docker \
     openrc \
     # google-cloud-sdk \
@@ -36,7 +34,6 @@ RUN apk add --update --no-cache \
 
 WORKDIR /var/gke-utils
 
-## todo add volumes
 VOLUME /root/.kube
 VOLUME /root/.docker
 VOLUME /root/.config
