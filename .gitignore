@@ -4,4 +4,5 @@
 # gcloud secrets
 /.gcloud/*
 !/.gcloud/.gitkeep
+!/.gcloud/config.dist.json
 /poc/

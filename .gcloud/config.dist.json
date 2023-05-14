@@ -1,0 +1,10 @@
+{
+  "project_id": "sonic-shuttle-381413",
+  "gke": {
+    "cluster_name": "stack-cluster",
+    "cluster_region": "europe-central2-a"
+  },
+  "acr": {
+    "region": "us-central1"
+  }
+}
