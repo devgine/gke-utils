@@ -1,4 +1,8 @@
 # GKE Utilities
+[![Build](https://github.com/devgine/gke-utils/actions/workflows/build.yaml/badge.svg?branch=main)](https://github.com/devgine/gke-utils/actions/workflows/build.yaml)
+[![GitHub](https://img.shields.io/github/license/devgine/gke-utils)](https://github.com/devgine/gke-utils/blob/main/LICENSE)
+![GitHub top language](https://img.shields.io/github/languages/top/devgine/gke-utils)
+[![Packages retention policy](https://github.com/devgine/gke-utils/actions/workflows/packages-retention-policy.yaml/badge.svg?branch=main)](https://github.com/devgine/gke-utils/actions/workflows/packages-retention-policy.yaml)
 
 ## About
 This is a docker image based on official alpine image and google cloud sdk and necessary tools to manage a kubernetes cluster hosted in GKE (google kubernetes engine).<br />
@@ -64,6 +68,9 @@ docker run --rm -ti \
   -v MANIFEST_DIRECTORY:/var/gke-utils \
   ghcr.io/devgine/gke-utils:latest sh
 ```
+> You can change latest with specific tag<br>
+> [Available versions](https://github.com/devgine/gke-utils/pkgs/container/gke-utils/versions)<br>
+
 Connect to the container and check if connection to the cluster is done.
 ```shell
 kubectl config get-contexts
