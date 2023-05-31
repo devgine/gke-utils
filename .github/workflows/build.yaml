@@ -82,7 +82,7 @@ jobs:
         run: cat /etc/os-release
 
       - name: Kubernetes client version
-        run: kubectl version --output=json
+        run: kubectl version --output=json --client=true
 
       - name: HELM version
         run: helm version
