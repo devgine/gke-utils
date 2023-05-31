@@ -1,0 +1,94 @@
+name: "Build"
+
+on:
+  push:
+    paths:
+      - Dockerfile
+      - .docker/**
+      - .github/workflows/build.yaml
+
+permissions:
+  contents: 'read'
+  id-token: 'write'
+
+jobs:
+  packaging:
+    strategy:
+      fail-fast: false
+      matrix:
+        gcloud: ['432.0.0']
+        k8s: ['1.24.13', '1.25.9', '1.26.4']
+        latest: [false]
+        include:
+          - gcloud: '432.0.0'
+            k8s: '1.27.1'
+            latest: true
+    name: "[Package] Google SDK v${{ matrix.gcloud }} K8S ${{ matrix.k8s }}"
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: 'actions/checkout@v3'
+
+      - name: Login to GitHub Container Registry
+        uses: 'docker/login-action@v1'
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GH_REPOSITORY_TOKEN }}
+
+      - name: Process builder
+        shell: bash
+        run: |
+          echo "build_date=$(date -u +"%Y-%m-%dT%H:%M:%SZ")" >> $GITHUB_ENV
+          echo "image_tag=${{ matrix.gcloud }}-k8s${{ matrix.k8s }}-alpine" >> $GITHUB_ENV
+
+      - name: Set up Depot CLI
+        uses: 'depot/setup-action@v1'
+
+      - name: Build and Push Package
+        uses: 'depot/build-push-action@v1'
+        with:
+          project: ${{ secrets.DEPOT_PROJECT_ID }}
+          token: ${{ secrets.DEPOT_PROJECT_TOKEN }}
+          provenance: false
+          sbom: false
+          push: true
+          context: .
+          tags: |
+            ghcr.io/devgine/gke-utils:${{ env.image_tag }}
+            ${{ matrix.latest && 'ghcr.io/devgine/gke-utils:latest' || ''}}
+          build-args: |
+            VCS_REF=${{ github.sha }}
+            BUILD_DATE=${{ env.build_date }}
+            BUILD_VERSION=${{ env.image_tag }}
+            K8S_VERSION=${{ matrix.k8s }}
+            CLOUD_SDK_VERSION=${{ matrix.gcloud }}
+            IMAGE_TAG=ghcr.io/devgine/gke-utils:${{ env.image_tag }}
+
+  checking:
+    strategy:
+      fail-fast: false
+      matrix:
+        gcloud: ['432.0.0']
+        k8s: ['1.24.13', '1.25.9', '1.26.4', '1.27.1']
+    needs: packaging
+    runs-on: ubuntu-latest
+    name: "[Run] Google SDK v${{ matrix.gcloud }} K8S ${{ matrix.k8s }}"
+    container:
+      image: ghcr.io/devgine/gke-utils:${{ matrix.gcloud }}-k8s${{ matrix.k8s }}-alpine
+    steps:
+      - name: OS release
+        run: cat /etc/os-release
+
+      - name: Kubernetes client version
+        run: kubectl version
+
+      - name: HELM version
+        run: helm version
+
+      - name: Kustomize version
+        run: kustomize version
+
+      - name: Kubeseal version
+        run: kubeseal --version
